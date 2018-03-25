@@ -1,0 +1,29 @@
+title: Go test
+summary: Run go test
+description: Run go test
+website: https://github.com/godrei/steps-go-test
+source_code_url: https://github.com/godrei/steps-go-test
+support_url: https://github.com/godrei/steps-go-test/issues
+
+type_tags:
+  - test
+
+toolkit:
+  go:
+    package_name: github.com/godrei/steps-go-test
+
+inputs:
+- include: 
+  opts:
+    title: Include pattern
+    summary: Run go test on matching packages.
+    description: |-
+      go test will be run on packages matching to the given glob pattern.
+
+      Leave this input empty to run go test on every packages in the current working directory.
+- exclude: 
+  opts:
+    title: Exclude pattern
+    summary: Skipp go test on matching packages.
+    description: |-
+      go test will be skipped on packages matching to the given glob pattern.
