@@ -1,69 +1,61 @@
 package main
 
 import (
-	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/bitrise-io/go-utils/command"
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-tools/go-steputils/stepconf"
-	glob "github.com/ryanuber/go-glob"
+	"github.com/godrei/steps-golint/gotool"
 )
 
-type config struct {
-	Include string `env:"include"`
+// Config ...
+type Config struct {
 	Exclude string `env:"exclude"`
 }
 
-func listFiles(include, exclude string) ([]string, error) {
-	cmd := command.New("go", "list", "./...")
-	out, err := cmd.RunAndReturnTrimmedCombinedOutput()
-	if err != nil {
-		return nil, err
-	}
+func installedInPath(name string) bool {
+	cmd := exec.Command("which", name)
+	outBytes, err := cmd.Output()
+	return err == nil && strings.TrimSpace(string(outBytes)) != ""
+}
 
-	split := strings.Split(out, "\n")
-	var packages []string
-
-	for _, p := range split {
-		p = strings.TrimSpace(p)
-
-		if include != "" && !glob.Glob(include, p) {
-			return nil, nil
-		}
-
-		if exclude != "" && glob.Glob(exclude, p) {
-			return nil, nil
-		}
-
-		packages = append(packages, p)
-	}
-
-	return packages, nil
+func failf(format string, args ...interface{}) {
+	log.Errorf(format, args...)
+	os.Exit(1)
 }
 
 func main() {
-	var cfg config
+	var cfg Config
 	if err := stepconf.Parse(&cfg); err != nil {
 		log.Errorf("Error: %s\n", err)
 		os.Exit(1)
 	}
 	stepconf.Print(cfg)
 
-	files, err := listFiles(cfg.Include, cfg.Exclude)
+	dir, err := os.Getwd()
 	if err != nil {
-		log.Errorf("Failed to list files: %s", err)
-		os.Exit(1)
+		failf("Failed to get working directory: %s", err)
 	}
 
-	cmd := command.NewWithStandardOuts("go", "test", strings.Join(files, "\n"))
+	excludes := strings.Split(cfg.Exclude, ",")
 
-	fmt.Println()
-	log.Infof("$ %s", cmd.PrintableCommandArgs())
+	packages, err := gotool.ListPackages(dir, excludes...)
+	if err != nil {
+		failf("Failed to list packages: %s", err)
+	}
 
-	if err := cmd.Run(); err != nil {
-		log.Errorf("go test failed: %s", err)
-		os.Exit(1)
+	log.Infof("\nRunning go test...")
+
+	for _, p := range packages {
+		cmd := command.NewWithStandardOuts("go", "test", p)
+
+		log.Printf("$ %s", cmd.PrintableCommandArgs())
+
+		if err := cmd.Run(); err != nil {
+			failf("go test failed: %s", err)
+		}
 	}
 }

@@ -13,14 +13,6 @@ toolkit:
     package_name: github.com/godrei/steps-go-test
 
 inputs:
-- include: 
-  opts:
-    title: Include pattern
-    summary: Run go test on matching packages.
-    description: |-
-      go test will be run on packages matching to the given glob pattern.
-
-      Leave this input empty to run go test on every packages in the current working directory.
 - exclude: 
   opts:
     title: Exclude pattern
