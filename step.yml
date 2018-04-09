@@ -1,6 +1,10 @@
 title: Go test
-summary: Run go test
-description: Run go test
+summary: Runs go test
+description: |-
+  Runs go test on the given packages one-by-one:
+
+  `go test -v <package>`
+
 website: https://github.com/godrei/steps-go-test
 source_code_url: https://github.com/godrei/steps-go-test
 support_url: https://github.com/godrei/steps-go-test/issues
@@ -13,9 +17,11 @@ toolkit:
     package_name: github.com/godrei/steps-go-test
 
 inputs:
-- exclude: 
+- packages: $BITRISE_GO_PACKAGES
   opts:
-    title: Exclude pattern
-    summary: Skipp go test on matching packages.
+    title: go test target packages
+    summary: go test target packages
     description: |-
-      go test will be skipped on packages matching to the given glob pattern.
+      Comma separated list of go packages, to run the go test command against.
+
+      Example: "github.com/owner/repo,github.com/owner/repo/package"
