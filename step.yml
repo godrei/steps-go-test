@@ -5,16 +5,16 @@ description: |-
 
   `go test -v <package>`
 
-website: https://github.com/godrei/steps-go-test
-source_code_url: https://github.com/godrei/steps-go-test
-support_url: https://github.com/godrei/steps-go-test/issues
+website: https://github.com/bitrise-steplib/steps-go-test
+source_code_url: https://github.com/bitrise-steplib/steps-go-test
+support_url: https://github.com/bitrise-steplib/steps-go-test/issues
 
 type_tags:
   - test
 
 toolkit:
   go:
-    package_name: github.com/godrei/steps-go-test
+    package_name: github.com/bitrise-steplib/steps-go-test
 
 inputs:
 - packages: $BITRISE_GO_PACKAGES
@@ -22,6 +22,6 @@ inputs:
     title: go test target packages
     summary: go test target packages
     description: |-
-      Comma separated list of go packages, to run the go test command against.
+      Newline (`\n`) separated list of go packages, to run the go test command against.
 
-      Example: "github.com/owner/repo,github.com/owner/repo/package"
+      Example: `github.com/my/step\ngithub.com/bitrise/step/tool`

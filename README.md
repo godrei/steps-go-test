@@ -2,7 +2,6 @@
 
 Go test
 
-
 ## How to use this Step
 
 Can be run directly with the [bitrise CLI](https://github.com/bitrise-io/bitrise),

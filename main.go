@@ -7,13 +7,7 @@ import (
 
 	"github.com/bitrise-io/go-utils/command"
 	"github.com/bitrise-io/go-utils/log"
-	"github.com/bitrise-tools/go-steputils/stepconf"
 )
-
-// Config ...
-type Config struct {
-	Packages string `env:"packages,required"`
-}
 
 func installedInPath(name string) bool {
 	cmd := exec.Command("which", name)
@@ -27,18 +21,18 @@ func failf(format string, args ...interface{}) {
 }
 
 func main() {
-	var cfg Config
-	if err := stepconf.Parse(&cfg); err != nil {
-		log.Errorf("Error: %s\n", err)
-		os.Exit(1)
-	}
-	stepconf.Print(cfg)
+	packages := os.Getenv("packages")
 
-	packages := strings.Split(cfg.Packages, ",")
+	log.Infof("Configs:")
+	log.Printf("- packages: %s", packages)
+
+	if packages == "" {
+		failf("Required input not defined: packages")
+	}
 
 	log.Infof("\nRunning go test...")
 
-	for _, p := range packages {
+	for _, p := range strings.Split(packages, "\n") {
 		cmd := command.NewWithStandardOuts("go", "test", "-v", p)
 
 		log.Printf("$ %s", cmd.PrintableCommandArgs())
